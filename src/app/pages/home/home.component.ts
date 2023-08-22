@@ -1101,7 +1101,7 @@ export class HomeComponent implements OnInit {
        btsService.addBts(data).subscribe(
         response => {
           //console.log('onlde003'+data.onl_de_003)
-          alert('Data added successfully');
+
         },
         error => {
           console.error('Error adding data to the database:', error);
