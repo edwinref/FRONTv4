@@ -13,10 +13,10 @@ export class BtsService {
   constructor(private http: HttpClient, private datePipe: DatePipe) {}
 
   public getProcessingCodes(): Observable<{ code: string, description: string }[]> {
-  return this.http.get<{ code: string, description: string }[]>('http://localhost:8080/bts/processingcodes');
+  return this.http.get<{ code: string, description: string }[]>('http://localhost:9091/bts/processingcodes');
 }
   public getMessageTypes(): Observable<{ code: string, description: string }[]> {
-    return this.http.get<{ code: string, description: string }[]>('http://localhost:8080/bts/messagetype');
+    return this.http.get<{ code: string, description: string }[]>('http://localhost:9091/bts/messagetype');
   }
 
 

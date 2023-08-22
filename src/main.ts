@@ -22,7 +22,7 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 import { registerLicense } from '@syncfusion/ej2-base';
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NGaF5cXmdCdkx3THxbf1xzZFNMZVxbR3JPMyBoS35RdUVkW39ednFVRWVcU0F0');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NGaF1cWGhAYVF3WmFZfV1gcF9DZFZRQGYuP1ZhSXxQdk1hW39adXBVQGJfUkE=');
 
 if (environment.production) {
   enableProdMode();

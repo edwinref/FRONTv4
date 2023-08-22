@@ -28,7 +28,7 @@ export class MessagetypeComponent implements OnInit {
 
         this.data = response;
         this.code = response;
-        console.log(this.code);
+        //console.log(this.code);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -46,7 +46,7 @@ export class MessagetypeComponent implements OnInit {
         this.code[index].deleting = true; // Set the deleting flag to true to display a loading state
         this.messagetypeService.deleteUser(id).subscribe(
           () => {
-            console.log('Bts deleted successfully');
+            alert('data deleted successfully');
             this.code.splice(index, 1); // Remove the deleted row from the array
             alert('L\'enregistrement a été supprimé avec succès'); // Display the success message
           },
@@ -103,9 +103,10 @@ export class MessagetypeComponent implements OnInit {
     };
     this.messagetypeService.saveMessageTypeY(newMessageType).subscribe(
       (savedUser) => {
-        console.log('saaaaaaaave' + newMessageType.code);
+        //console.log('saaaaaaaave' + newMessageType.code);
+        console.log(savedUser);
 
-        console.log('User saved successfully:', savedUser);
+        alert('MessageType saved successfully');
         this.codeP = '';
         this.descriptionP = '';
       },

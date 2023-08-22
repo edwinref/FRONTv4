@@ -1,7 +1,7 @@
 export interface ProcessingCode {
     code: string;
     description: string;
-  deleting?: boolean;
+    deleting?: boolean;
 
 }
 export interface MessageType {

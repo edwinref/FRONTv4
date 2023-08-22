@@ -8,9 +8,33 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { saveAs } from 'file-saver';
 import {LicenseManager} from 'ag-grid-enterprise';
 import {environment} from "../environments/environment";
+import {any} from "codelyzer/util/function";
 
 LicenseManager.setLicenseKey('Ngo9BigBOggjHTQxAR8/V1NGaF5cXmdCdkx3THxbf1xzZFNMZVxbR3JPMyBoS35RdUVkW39ednFVRWVcU0F0');
 LicenseManager.getLicenseDetails('Ngo9BigBOggjHTQxAR8/V1NGaF5cXmdCdkx3THxbf1xzZFNMZVxbR3JPMyBoS35RdUVkW39ednFVRWVcU0F0');
+
+interface BtsSubset {
+  msg_seq: string;
+  wording: string ;
+  onl_de_057: string ;
+}
+
+
+interface Config {
+  token: string;
+  uid: string;
+  wording: string;
+  substring: string; // Add the substring property
+}
+
+function extractSubstring(input: string, pattern: RegExp, length: number): string | null {
+  const match = input.match(pattern);
+  if (match) {
+    return match[0].substr(0, length);
+  } else {
+    return null;
+  }
+}
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -31,7 +55,8 @@ export class HomeComponent implements OnInit {
     right: false
   };
   selectedBts: Bts | null;
-
+  btsSubsetArray: BtsSubset[];
+  configArray:Config[];
   focus;
   focus1;
   public bts1;
@@ -64,6 +89,7 @@ export class HomeComponent implements OnInit {
 
   public isAddClicked = false;
   public isAddClicked1 = false;
+  public isAddClicked2 = false;
 
   isAddOptionClicked = false;
   isTableVisible = false;
@@ -125,10 +151,11 @@ export class HomeComponent implements OnInit {
     }
     return ['', '']; // Return empty strings if the value is not valid
   }
+  public configure :any[]=[];
   public data: Object[] = []; // Initialize data property with an empty array
-  public pageOption: Object = { pageCount: 5 };
+  public pageOption: Object = { pageCount: 9 };
   public groupSettings: { [x: string]: Object } = { showDropArea: false, columns: ['onl_de_042', 'onl_de_041',this.onl_de_124_table] };
-  public refresh = false; // Initialize refresh property with 'false'
+  public refresh = true; // Initialize refresh property with 'false'
   @ViewChild('grid')
   public grid!: GridComponent; // Add '!' to tell TypeScript that it will be initialized later
   showAddForm() {
@@ -144,8 +171,13 @@ export class HomeComponent implements OnInit {
     this.isAddClicked1 = true;
 
   }
+  onShow2(): void {
+    this.isAddClicked2 = true;
 
-
+  }
+  onCloseFlowWindow2() {
+    this.isAddClicked2 = false;
+  }
 
   onCloseFlowWindow() {
     this.isAddClicked = false;
@@ -164,13 +196,13 @@ export class HomeComponent implements OnInit {
     this.getProcessingCodes();
     this.getDefaultValues();
     this.getMessageType();
-    console.log(this.getOnlDe124Table()+"part 1  "+this.onl_de_124_part1);
-
+//    console.log(this.getOnlDe124Table()+"part 1  "+this.onl_de_124_part1);
+    this.extractPatternFromBtsSubsetArray();
 
   }
 
   private getDefaultValues(): void {
-    console.log(this.btsService.getProcessingCodes());
+    //console.log(this.btsService.getProcessingCodes());
     this.btsService.getDefaultValues().subscribe(
       (response: any) => {
         this.defaultValues = response;
@@ -210,7 +242,7 @@ export class HomeComponent implements OnInit {
     this.btsService.getProcessingCodes().subscribe(
       (response: ProcessingCode[]) => {
         this.processingCodes = response;
-        console.log(this.processingCodes);
+        //console.log(this.processingCodes);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -221,7 +253,7 @@ export class HomeComponent implements OnInit {
     this.btsService.getMessageTypes().subscribe(
       (response: ProcessingCode[]) => {
         this.message_type = response;
-        console.log(this.message_type);
+        //console.log(this.message_type);
 
       },
       (error: HttpErrorResponse) => {
@@ -295,15 +327,38 @@ export class HomeComponent implements OnInit {
   public getBts(): void {
     this.btsService.getBts().subscribe(
       (response: Bts[]) => {
-
+        let token = "QK";
+        let uid = 36;
         this.data = response;
         this.bts = response;
-        console.log(this.bts);
+        this.btsSubsetArray = response.map(btsItem => {
+          return {
+            msg_seq: btsItem.msg_seq,
+            wording: btsItem.wording,
+            onl_de_057: btsItem.onl_de_057
+          };
+        });
+
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
       }
     );
+  }
+  public extractPatternFromBtsSubsetArray() {
+    let token = "QK";
+    let uid = 36;
+    for (let i = 0; i < this.btsSubsetArray.length; i++) {
+      let inputString = this.btsSubsetArray[i].onl_de_057;
+
+      let tokenIndex = inputString.indexOf(token);
+      let uidIndex = tokenIndex + token.length;
+      let patternPortion = inputString.substring(uidIndex + uid.toString().length + 1, inputString.indexOf("!", uidIndex));
+      let segments = patternPortion.split("-");
+      let finalPattern = segments.join("-");
+      //console.log(finalPattern)
+      return finalPattern;
+    }
   }
 
 
@@ -343,7 +398,7 @@ export class HomeComponent implements OnInit {
 
     const selectedCode = this.processingCodes.find((code) => code.description === this.selectedDescription)?.code;
     const selectedCode1 = this.message_type.find((code) => code.description === this.selectedDescription1)?.code;
-
+    //console.log('selectedCode1 is :'+selectedCode1);
     const insertedValue = this.onl_de_035.trim();
 
     if (insertedValue.length > 0 && insertedValue.length <= 19) {
@@ -381,7 +436,7 @@ export class HomeComponent implements OnInit {
     if (this.onl_de_041 && this.onl_de_041.trim() !== '') {
       this.onl_de_041 = this.completeWithSpaces(this.onl_de_041);
     }
-    console.log('onl_de_124:', this.onl_de_124);
+    //console.log('onl_de_124:', this.onl_de_124);
     const data: Bts = {
       msg_seq: nextMsgSeq,
       sim_env: 'Base24',
@@ -400,6 +455,7 @@ export class HomeComponent implements OnInit {
       onl_de_013: this.onl_de_013.trim() !== '' ? this.onl_de_013 : null,
       onl_de_007: this.onl_de_007.trim() !== '' ? this.onl_de_007 : null,
       message_type: selectedCode1,
+
       wording: this.wording.trim() !== '' ? this.wording : null,
       logical_network: this.logical_network.trim() !== '' ? this.logical_network : null,
       financial_constitution_id: this.financial_constitution_id.trim() !== '' ? this.financial_constitution_id : null,
@@ -423,12 +479,12 @@ export class HomeComponent implements OnInit {
       user_create: this.user_create.trim() !== '' ? this.user_create : null,
       user_modif: this.user_modif.trim() !== '' ? this.user_modif : null,
     };
-    console.log(data);
+    //console.log(data);
     this.btsService.addBts(data).subscribe(
       (response: Bts) => {
-        console.log('Data inserted successfully 124:', response.onl_de_124);
-
-        console.log('Data inserted successfully:', response);
+       // console.log('Data inserted successfully 124:', response.onl_de_124);
+        alert('Data inserted successfully');
+       // console.log('Data inserted successfully:', response);
         this.successMessage = 'l enregistremet a été ajouté avec succès';
         this.clearFields();
         setTimeout(() => {
@@ -500,14 +556,14 @@ export class HomeComponent implements OnInit {
                                                    '${data.onl_de_027}', '${data.onl_de_032}', '${data.onl_de_039}', '${data.onl_de_043}',
                                                    '${data.onl_de_048}', '${data.onl_de_049}', '${data.onl_de_057}', '${data.onl_de_061}',
                                                    '${data.onl_de_100}', '${data.user_create}', '${data.user_modif}');`;
-          console.log('SQL Insert Statement:');
-          console.log(insertSQL);
+          //console.log('SQL Insert Statement:');
+          //console.log(insertSQL);
           blob = new Blob([insertSQL], {
             type: 'text/plain;charset=utf-8',
           });
           saveAs(blob, response.msg_seq + '.sql');
         } else {
-          console.log('No data found for the given msg_seq.');
+          alert('No data found for the given msg_seq.');
         }
       },
       (error: HttpErrorResponse) => {
@@ -527,7 +583,7 @@ export class HomeComponent implements OnInit {
         this.bts[index].deleting = true; // Set the deleting flag to true to display a loading state
         this.btsService.deleteBts(msg_seq).subscribe(
           () => {
-            console.log('Bts deleted successfully');
+            alert('data deleted successfully');
             this.bts.splice(index, 1); // Remove the deleted row from the array
             alert('L\'enregistrement a été supprimé avec succès'); // Display the success message
           },
@@ -599,7 +655,7 @@ export class HomeComponent implements OnInit {
   onClick() {
     this.btsService.getBts().subscribe(
       (response: Bts[]) => {
-        console.log(response.length);
+        //console.log(response.length);
         const insertSQL = `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035,
                                                                                             onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060,
                                                                                             onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording,
@@ -626,14 +682,14 @@ export class HomeComponent implements OnInit {
             .join(', ');
 
           const insertSQLWithValues = insertSQL + values;
-          console.log('SQL Insert Statement:');
-          console.log(insertSQLWithValues);
+          //console.log('SQL Insert Statement:');
+          //console.log(insertSQLWithValues);
           blob = new Blob([insertSQLWithValues], {
             type: 'text/plain;charset=utf-8',
           });
           saveAs(blob, 'result.sql');
         } else {
-          console.log('No data found for the given msg_seq.');
+          alert('No data found for the given msg_seq.');
         }
       },
       (error: HttpErrorResponse) => {
@@ -796,28 +852,28 @@ export class HomeComponent implements OnInit {
 
 
 
-  private selectedFile: File;
-  mtiCount: number = 0;
+  selectedFiles: File[] = [];
+
   onFileChange(event: any) {
-    // Get the selected file from the input element
-    this.selectedFile = event.target.files[0];
+    // Get the selected files from the input element
+    this.selectedFiles = Array.from(event.target.files);
   }
 
-  parseFile() {
-    if (this.selectedFile) {
-      // Create a new FileReader to read the file content
-      const fileReader = new FileReader();
+  parseFiles() {
+    this.selectedFiles.forEach((file) => {
+      if (file) {
+        const fileReader = new FileReader();
 
-      fileReader.onload = (e: any) => {
-        const fileContent = e.target.result; // The file content will be stored here
-        // Now, you can parse the file content as needed
-        this.parseContent(fileContent);
-      };
+        fileReader.onload = (e: any) => {
+          const fileContent = e.target.result;
+          this.parseContent(fileContent);
+        };
 
-      fileReader.readAsText(this.selectedFile); // Read the file as text
-    } else {
-      console.log('No file selected.');
-    }
+        fileReader.readAsText(file);
+      } else {
+        alert('No file selected.');
+      }
+    });
   }
 
   parseContent(fileContent) {
@@ -825,40 +881,128 @@ export class HomeComponent implements OnInit {
 
     const mtiPattern = /- M.T.I\s+:\s+\[(\d{4})\]/;
     const keyValuePattern = /- FLD \((\d+)\)\s+\((\d+)\)\s+\[(.+)\]/;
+    const fld057StartPattern = /- FLD \(057\)\s+\(\d+\)\s+\[/;
+    const fld057EndPattern = /\]/;
+    const flstest=/\b\d{4} \d{9} \d{8} \d{8}\|4\|\s+(.*)$/;
+    const regextest = /\[(.*?)\]/;
+    const fld003Pattern = /FLD \(003\).*?\[(\d+)\]/;
 
     let extractedData = [];
     let currentMTI = null;
     let currentFLD = null;
+    let currentFLD057 = '';
+    let uniqueResult1 = '';
+    let insideFLD057 = false;
+    let accumulatedFLD057 = '';
+    var mtiFLD057Values = new Array();
+    var onl003=new Array();
+    let indexJson=0;
+    let index057=0;
 
-    lines.forEach((line) => {
+    lines.forEach((line, index, array) => {
       const mtiMatch = line.match(mtiPattern);
       const keyValueMatch = line.match(keyValuePattern);
+      const fld057StartMatch = line.match(fld057StartPattern);
+      const fld057EndMatch = line.match(fld057EndPattern);
+      const fldtestMatch =line.match(flstest);
+      const fldtestMatch003 =line.match(fld003Pattern);
 
       if (mtiMatch) {
         currentMTI = mtiMatch[1];
-        if (currentMTI === '0120') {
-          currentFLD = null; // Reset currentFLD for new MTI 0120 block
+        currentFLD = null; // Reset currentFLD for new MTI block
+        currentFLD057 = ''; // Reset currentFLD057 for new MTI block
+
+        insideFLD057 = false;
+        uniqueResult1 = '';
+      } else
+      if ((currentMTI === '0120' || currentMTI === '0220' || currentMTI === '0420' || currentMTI === '0520')) {
+        if (fldtestMatch003){
+          const fld003Value = fldtestMatch003[1]; // Extracted value from the pattern
+
+          onl003.push(fld003Value);
         }
-      } else if (currentMTI === '0120' && keyValueMatch) {
-        const field = keyValueMatch[1].trim();
-        const value = keyValueMatch[3].trim();
-        if (parseInt(field) >= 3 && parseInt(field) <= 125) {
-          if (!currentFLD) {
-            currentFLD = {};
-            extractedData.push(currentFLD);
+        if (fldtestMatch) {
+          const field = fldtestMatch[1].trim();
+
+          //console.log("filed  " + field);
+          if (field.includes('057')) {
+            //console.log('Found field 57');
+            insideFLD057 = true; // Mark that we are inside fld057
+            // Initialize currentFLD057 with the current line content
+            currentFLD057 = line;
+            // Check if the current line does not contain ']' and there are more lines
+            while (!line.includes(']') && index + 1 < array.length) {
+              // Move to the next line and concatenate it to currentFLD057
+              index++;
+
+              line = array[index];
+              currentFLD057 += line;
+            }
+            // At this point, currentFLD057 contains the concatenated lines
+            //console.log('Concatenated fld057:', currentFLD057);
+            const filteredContentMatches = currentFLD057.match(regextest);
+            if (filteredContentMatches) {
+              const filteredContent = filteredContentMatches[1];
+              //console.log('Filtered FLD 057 Content:', filteredContent);
+
+              const pattern = /(\s*)\.\d{4} \d{9} \d{8} \d{8}\|4\|(\s)/g;
+              uniqueResult1 = filteredContent.replace(pattern, '');
+              mtiFLD057Values[currentMTI] = uniqueResult1; // Store FLD 057 value for current MTI
+
+              currentFLD[`onl_de_057`] = uniqueResult1;
+              //console.log('uniqueResult1 for MTI', currentMTI + ': ' + uniqueResult1);
+              if (!mtiFLD057Values[currentMTI]) {
+                mtiFLD057Values[currentMTI] = []; // Initialize array if it doesn't exist
+              }
+              mtiFLD057Values.push(uniqueResult1);
+            }
           }
-          currentFLD[`onl_de_${field}`] = value;
+        }
+
+        if (insideFLD057) {
+          accumulatedFLD057 += line.trim(); // Accumulate lines without closing bracket
+          if (fld057EndMatch) {
+            insideFLD057 = false;
+            //console.log('Accumulated FLD 057:', accumulatedFLD057);
+            accumulatedFLD057 = ''; // Reset accumulatedFLD057 after processing
+          }
+        }
+        if (keyValueMatch) {
+          const field = keyValueMatch[1].trim();
+         // console.log(field);
+          const value = keyValueMatch[3].trim();
+          if (parseInt(field) >= 3 && parseInt(field) <= 125) {
+            if (!currentFLD) {
+              currentFLD = {};
+              extractedData.push(currentFLD);
+              currentFLD['message_type'] = currentMTI; // Set message type
+            }
+            //console.log(field+" :  "+value)
+            currentFLD[`onl_de_${field}`] = value;
+            if (fldtestMatch && parseInt(field) == 57) {
+              //console.log(field + " :  " + value)
+            }
+          }
         }
       }
+      else if (currentFLD057 !== '' && line.trim() !== ']' && line.trim() !== '.') {
+        currentFLD057 += line.trim(); // Concatenate multiline FLD 057 content
+        //console.log(currentFLD057)
+
+      }
+
+
     });
 
-    extractedData.forEach((data) => {
-      data['onl_de_002'] = '0120';
-
-
-
+    extractedData.forEach((data,index) => {
+      data['onl_de_057'] = mtiFLD057Values[index] || '';
+      //console.log("mtiFLD057Values with index  "+mtiFLD057Values[index])
+     // data['onl_de_003'] = onl003[index] || '';
+      data['onl_de_003'] = data.onl_de_003.toString();
       // Add default values for missing keys
       const defaultValues: {
+
+        wording:string;
         sim_env: string;
         response_flag: string;
         message_type: string;
@@ -886,6 +1030,7 @@ export class HomeComponent implements OnInit {
         autho_code: string;
         delay_time: number
       } = {
+        wording:'message'+Math.floor(Math.random() * 1000),
         sim_env:'Base24',
         activity_flag: 'N',
         send_count: 1,
@@ -936,25 +1081,27 @@ export class HomeComponent implements OnInit {
 
       const insertQuery = `INSERT INTO pwr_cert_messages (${columns}) VALUES (${values});`;
 
-      console.log(insertQuery);
+      //console.log(insertQuery);
     });
     const btsService = {
-      addBts: (bts) => {
+    addBts: (bts) => {
         // Assuming this.http.post returns an Observable
-        return this.http.post(`${this.apiServerUrl}/bts/add`, bts);
+       return this.http.post(`${this.apiServerUrl}/bts/add`, bts);
       },
-    };
+     };
     // Convert the extracted data to JSON
     // Log the JSON output
-    console.log(jsonData);
+
+    //console.log(jsonData);
     dataArray.forEach((data) => {
-      console.log(data); // Print each object
-      console.log(data.onl_de_003)
+      //console.log(data); // Print each object
+      //console.log(data.onl_de_003)
 
       // Calling addBts method to add data to the database
-      btsService.addBts(data).subscribe(
+       btsService.addBts(data).subscribe(
         response => {
-          console.log('Data added successfully:', response);
+          //console.log('onlde003'+data.onl_de_003)
+          alert('Data added successfully');
         },
         error => {
           console.error('Error adding data to the database:', error);
@@ -963,6 +1110,85 @@ export class HomeComponent implements OnInit {
     });
     return jsonData;
   }
+
+
+
+  parseFilesConfig() {
+    this.selectedFiles.forEach((file) => {
+      if (file) {
+        const fileReader = new FileReader();
+
+        fileReader.onload = (e: any) => {
+          const fileContent = e.target.result;
+          try {
+            this.parseContentConfig(fileContent);
+          } catch (error) {
+            console.error("Error parsing file content:", error);
+          }
+        };
+
+        fileReader.onerror = (e: any) => {
+          console.error("File reading error:", e.target.error);
+        };
+
+        fileReader.readAsText(file);
+      } else {
+        console.log('No file selected.');
+      }
+    });
+  }
+
+  parseContentConfig(fileContent: string) {
+    const lines = fileContent.split('\n');
+    const pattern3 = /token:(\w+)\s*uid:(\d+)/;
+    const tokenToConfigMap: Record<string, Config[]> = {};
+
+    let combinedLines = [];
+    lines.forEach(line => {
+      if (line.trim() !== '') {
+        combinedLines.push(line);
+      } else if (combinedLines.length > 0) {
+        const combinedText = combinedLines.join(' ');
+        const match3 = combinedText.match(pattern3);
+        if (match3) {
+          const tokenValue = match3[1].substr(0, 7);
+          const uidValue = match3[2].padStart(5, '0');
+          const uid = parseInt(uidValue);
+          const concat = tokenValue.concat(uidValue);
+
+          if (!tokenToConfigMap[tokenValue]) {
+            tokenToConfigMap[tokenValue] = [];
+          }
+
+          for (let i = 0; i < this.btsSubsetArray.length; i++) {
+            const inputText = this.btsSubsetArray[i].onl_de_057;
+
+            const dynamicPattern = new RegExp(`${concat}(.{${uid - 1}})`);
+            const substring = extractSubstring(inputText, dynamicPattern, uid + 8);
+            const substring1 = substring.substring(8);
+
+            const config: Config = {
+              token: tokenValue,
+              uid: uidValue,
+              wording: this.btsSubsetArray[i].wording,
+              substring: substring1
+            };
+
+            tokenToConfigMap[tokenValue].push(config);
+          }
+        }
+
+        combinedLines = [];
+      }
+    });
+
+    // Logging the result for each token
+    for (const tokenValue in tokenToConfigMap) {
+      console.log(`Table for token: ${tokenValue}`);
+      console.table(tokenToConfigMap[tokenValue]);
+    }
+  }
+
 
 }
 

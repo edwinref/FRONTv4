@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   email: String;
   condition: boolean;
   login(addForm: NgForm) {
-    console.log('loginnnnn');
+    //console.log('loginnnnn');
     console.log(addForm.value);
     this.loginservice.getuser(addForm.value).subscribe(
         (response: user ) => {
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           sessionStorage.setItem('id', response.id);
           sessionStorage.setItem('prenom', response.prenom);
           sessionStorage.setItem('email', response.email);
-          sessionStorage.setItem('psw', response.password);
+         // sessionStorage.setItem('psw', response.password);
           sessionStorage.setItem('role', response.role);
           console.log(sessionStorage);
 

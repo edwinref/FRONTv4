@@ -77,6 +77,8 @@
                           <button type="button" (click)="confirmTruncateTable()" class="btn btn-success btn-sm">Truncate Table</button>
                           <button type="button"  (click)="onShow1()" class="btn btn-danger btn-sm">Upload File</button>
                           <button type="button" *ngIf="isAddClicked1 "  (click)="onCloseFlowWindow1()"class="btn btn-info btn-sm">Hide</button>
+                          <button type="button"  (click)="onShow2()" class="btn btn-info btn-sm">Upload Configuration File</button>
+                          <button type="button" *ngIf="isAddClicked2 "  (click)="onCloseFlowWindow2()"class="btn btn-info btn-sm">Hide</button>
 
 
                         </div>
@@ -105,7 +107,7 @@
                                     <div class="col-sm-6">
                                       <select id="message_type" [(ngModel)]="selectedDescription1" class="form-control form-control-sm" #messageType="ngModel" required>
                                         <option value="">-- Select a Message Type --</option>
-                                        <option *ngFor="let code of message_type" [value]="code.description">{{ code.description }}</option>
+                                        <option *ngFor="let code of message_type" [value]="code.code">{{ code.description }}</option>
                                       </select>
                                       <span class="text-danger" *ngIf="messageType.touched && messageType.errors?.required">*Message Type is required</span>
                                     </div>
@@ -116,7 +118,7 @@
                                     <div class="col-sm-6">
                                       <select id="onl_de_003" [(ngModel)]="selectedDescription" class="form-control form-control-sm" #processingCode="ngModel" required>
                                         <option value="">-- Select a processing code --</option>
-                                        <option *ngFor="let code of processingCodes" [value]="code.description">{{ code.description }}</option>
+                                        <option *ngFor="let code of processingCodes" [value]="code.code">{{ code.description }}</option>
                                       </select>
                                       <span class="text-danger" *ngIf="processingCode.touched && processingCode.errors?.required">*Processing Code is required</span>
                                     </div>
@@ -395,12 +397,17 @@
                           {{ successMessage }}
                         </div>
                       </div>
-                      <div class="mb-3" *ngIf="isAddClicked1  " >
-                        <label for="formFile" class="form-label">Ajouter un fichier</label>
-                        <input class="form-control" type="file" id="formFile" (change)="onFileChange($event)">
-                        <button class="btn btn-outline-success btn-sm"(click)="parseFile()">Parse File</button>
-
+                      <div class="mb-3" *ngIf="isAddClicked1">
+                        <label for="formFile" class="form-label">Ajouter des fichiers</label>
+                        <input class="form-control" multiple type="file" id="formFile" (change)="onFileChange($event)">
+                        <button class="btn btn-outline-success btn-sm" (click)="parseFiles()">Parse Files</button>
                       </div>
+                      <div class="mb-3" *ngIf="isAddClicked2">
+                        <label for="formFile1" class="form-label">Ajouter des fichiers de configuration</label>
+                        <input class="form-control" multiple type="file" id="formFile1" (change)="onFileChange($event)">
+                        <button class="btn btn-outline-info btn-sm" (click)="parseFilesConfig()">Parse Config Files</button>
+                      </div>
+
 
                     </div>
 
@@ -413,7 +420,7 @@
                       <div class="control-section">
                         <ejs-grid #grid [dataSource]="data" [allowPaging]="true" [allowGrouping]="true"
                                   [groupSettings]="groupSettings" [pageSettings]='pageOption'
-                                  (dataBound)='dataBound()' (load)='load()' height='400px'
+                                  (dataBound)='dataBound()' (load)='load()' height='700px'
                                   class="grid-container e-bordered">
                           <e-columns style=" font-size: 10px;">
                             <!-- New Columns from the Bts interface -->

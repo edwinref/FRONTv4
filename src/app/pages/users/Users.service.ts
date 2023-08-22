@@ -12,7 +12,7 @@ import {Bts} from "../home/bts";
 
 export class UserService {
 
-  private baseURL = 'http://localhost:8080/saveuser';
+  private baseURL = 'http://localhost:9091/saveuser';
 
   constructor(private httpClient: HttpClient) {
 
@@ -23,12 +23,12 @@ export class UserService {
 
 
   public getAllUsers(): Observable<{ id: number, prenom: string, email: string, password: string, role: string}[]> {
-    return this.httpClient.get<{ id: number, prenom: string, email: string, password: string, role: string} []>('http://localhost:8080/getAllUsers');}
+    return this.httpClient.get<{ id: number, prenom: string, email: string, password: string, role: string} []>('http://localhost:9091/getAllUsers');}
   public deleteUser(id: number): Observable<void> {
-    return this.httpClient.delete<void>(`http://localhost:8080/deleteuser/${id}`);
+    return this.httpClient.delete<void>(`http://localhost:9091/deleteuser/${id}`);
   }
   updateUser(users: Users): Observable<Users> {
-    const url = `http://localhost:8080/updateuser/${users.id}`;
+    const url = `http://localhost:9091/updateuser/${users.id}`;
     return this.httpClient.put<Users>(url, users);
   }
 }

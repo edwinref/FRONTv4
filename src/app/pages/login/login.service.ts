@@ -12,7 +12,7 @@ export class LoginService {
   constructor(private http: HttpClient) { }
   public getuser(facture1: user): Observable<user> {
     console.log(facture1);
-    return this.http.post<user>(`http://localhost:8080/getuser`, facture1);
+    return this.http.post<user>(`http://localhost:9091/getuser`, facture1);
 
   }
 

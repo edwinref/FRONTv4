@@ -38,7 +38,7 @@ export class ProcessingcodeComponent implements OnInit {
 
         this.data = response;
         this.code = response;
-        console.log(this.code);
+        //console.log(this.code);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -52,7 +52,7 @@ export class ProcessingcodeComponent implements OnInit {
 
         this.data = response;
         this.codeTransactionType = response;
-        console.log(this.codeTransactionType);
+        //console.log(this.codeTransactionType);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -65,7 +65,7 @@ export class ProcessingcodeComponent implements OnInit {
 
         this.data = response;
         this.codeTransactionStatue = response;
-        console.log(this.codeTransactionStatue);
+        //console.log(this.codeTransactionStatue);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -81,7 +81,7 @@ export class ProcessingcodeComponent implements OnInit {
         this.code[index].deleting = true; // Set the deleting flag to true to display a loading state
         this.processingcodeService.deleteUser(id).subscribe(
           () => {
-            console.log('Bts deleted successfully');
+            alert('data  deleted successfully');
             this.code.splice(index, 1); // Remove the deleted row from the array
             alert('L\'enregistrement a été supprimé avec succès'); // Display the success message
           },
@@ -138,9 +138,9 @@ export class ProcessingcodeComponent implements OnInit {
     };
     this.processingcodeService.saveProcessingCodeY(newProcessingCode).subscribe(
       (savedUser) => {
-        console.log('saaaaaaaave' + newProcessingCode.code);
-
-        console.log('User saved successfully:', savedUser);
+       // console.log('saaaaaaaave' + newProcessingCode.code);
+        alert('Processing Code saved successfully');
+        console.log(savedUser);
         this.codeP = '';
         this.descriptionP = '';
       },
