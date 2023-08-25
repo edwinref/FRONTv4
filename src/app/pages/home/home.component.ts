@@ -668,7 +668,14 @@ export class HomeComponent implements OnInit {
         if (response.length > 0) {
           const values = response
             .map((data: Bts) => {
-              return `('${data.msg_seq}', '${data.sim_env}', '${data.onl_de_004}', '${data.onl_de_003}',
+              return `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035,
+                                                                                            onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060,
+                                                                                            onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording,
+                                                                                            logical_network, financial_constitution_id, activity_flag, send_count,
+                                                                                            delay_time, chunk_delay, response_flag, reversal_flag, onl_de_018,
+                                                                                            onl_de_024, onl_de_027, onl_de_032, onl_de_039, onl_de_043,
+                                                                                            onl_de_048, onl_de_049, onl_de_057, onl_de_061, onl_de_100,
+                                                                                            user_create, user_modif) VALUES `+`('${data.msg_seq}', '${data.sim_env}', '${data.onl_de_004}', '${data.onl_de_003}',
                                     '${data.onl_de_011}', '${data.onl_de_035}', '${data.onl_de_037}', '${data.onl_de_038}',
                                     '${data.onl_de_041}', '${data.onl_de_042}', '${data.onl_de_060}', '${data.onl_de_125}',
                                     '${data.onl_de_012}', '${data.onl_de_013}', '${data.onl_de_007}', '${data.message_type}',
@@ -681,7 +688,7 @@ export class HomeComponent implements OnInit {
             })
             .join(', ');
 
-          const insertSQLWithValues = insertSQL + values;
+          const insertSQLWithValues =  values;
           //console.log('SQL Insert Statement:');
           //console.log(insertSQLWithValues);
           blob = new Blob([insertSQLWithValues], {
