@@ -686,7 +686,7 @@ export class HomeComponent implements OnInit {
                                     '${data.onl_de_048}', '${data.onl_de_049}', '${data.onl_de_057}', '${data.onl_de_061}',
                                     '${data.onl_de_100}', '${data.user_create}', '${data.user_modif}')`;
             })
-            .join(', ');
+            .join('; ');
 
           const insertSQLWithValues =  values;
           //console.log('SQL Insert Statement:');
