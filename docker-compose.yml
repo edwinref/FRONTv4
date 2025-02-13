@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: poptop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  springboot:
+    image: elhadirefki/springboot-docker-demo
+    container_name: springboot_app
+    ports:
+      - "9091:9091"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres  # Referencing postgres service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: poptop
+    depends_on:
+      - postgres
+
+  angular:
+    image: refki/argon-dashboard-angular
+    container_name: angular_front
+    ports:
+      - "4200:80"  # Map Angular's default port to 4200
+    depends_on:
+      - springboot
+    volumes:
+      - ./dist/angular:/usr/share/nginx/html  # Mount the built Angular files to the Nginx directory
+    build:
+      context: .  # Assuming your Dockerfile is in the same directory
+      dockerfile: Dockerfile  # Name of the Dockerfile for building the Angular app
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server
+    ports:
+      - "80:80"  # Map Nginx port to host port
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Mount the Nginx configuration file
+      - ./dist/angular:/usr/share/nginx/html  # Mount the Angular build files
+    depends_on:
+      - angular
+
+volumes:
+  postgres_data:

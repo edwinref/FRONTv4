@@ -1,9 +1,10 @@
 <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
-     style="min-height: 600px; background-image: url(assets/img/theme/hps.jpg); background-size: cover; background-position: center top;">
+     style="min-height: 600px; height: 600px; background-image: url(assets/img/theme/hps.jpg); background-size: cover; background-position: center top;">
   <span class="mask bg-gradient-danger1 opacity-8"></span>
-
 </div>
+
 <div class="container-fluid mt--7">
+  
   <div class="row">
     <div class="col-xl-12 order-xl-1" style="    margin-top: -300px !important;">
       <div class="card bg-secondary shadow">
@@ -40,6 +41,10 @@
               bottom: .5em;
             }
           </style>
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+          <script type="text/javascript"  src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+          <script type="text/javascript"  src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+       
           <script>
             $(document).ready(function () {
               $('#dtHorizontalExample').DataTable({
@@ -48,6 +53,18 @@
               $('.dataTables_length').addClass('bs-select');
             });
           </script>
+          <script>
+            $(document).ready(function(){
+                $('#myTable').dataTable();
+            });
+            </script>
+            <script>
+              new DataTable('#myTable', {
+                layout: {
+                    top1: 'searchPanes'
+                }
+            });
+              </script>
           <main>
             <div class="position-relative">
               <!-- Hero for FREE version -->
@@ -397,11 +414,54 @@
                           {{ successMessage }}
                         </div>
                       </div>
-                      <div class="mb-3" *ngIf="isAddClicked1">
+                      <!-- <div class="mb-3" *ngIf="isAddClicked1">
                         <label for="formFile" class="form-label">Ajouter des fichiers</label>
                         <input class="form-control" multiple type="file" id="formFile" (change)="onFileChange($event)">
                         <button class="btn btn-outline-success btn-sm" (click)="parseFiles()">Parse Files</button>
-                      </div>
+          
+                      </div> -->
+                      <form *ngIf="isAddClicked1">
+                        <div class="mb-3">
+                          <label for="formFile" class="form-label">Ajouter des fichiers</label>
+                          <input multiple type="file" class="form-control" id="formFile" (change)="onFileChange($event)"> 
+                        </div> 
+      
+                        <div class="form-floating mb-3">
+                          <textarea class="form-control" disabled placeholder="Leave a comment here" id="configurationExemple" style="height: 400px">
+
+                        [
+                          {
+                            "authorizer_id": "ZAMS",
+                            "network_code": "23",
+                            "min": "4724580000000000",
+                            "max": "4724589999999999",
+                            "card_number": "4724580000000008"
+                          },
+                          {
+                            "authorizer_id": "MDS",
+                            "network_code": "02",
+                            "min": "5164180000000000",
+                            "max": "5164189999999990",
+                            "card_number": "5164180000000001"
+                          }
+                        ]
+
+                        Tu peux ajouter plusieurs configurations de cartes
+                      </textarea>
+                          <label for="configurationExemple">Configuration Exemple</label>
+                        </div>
+                        
+                        
+                        
+                        <div class="mb-3">
+                          <label for="configuration">Configuration</label>
+                          <textarea class="form-control" placeholder="Ajouter configurations des cartes" id="configuration" style="height: 100px"></textarea>
+                        </div>
+
+                
+                       
+                        <button type="submit"  (click)="parseFiles()" class="btn btn-primary">Generate Scripts</button>
+                      </form>
                       <div class="mb-3" *ngIf="isAddClicked2">
                         <label for="formFile1" class="form-label">Ajouter des fichiers de configuration</label>
                         <input class="form-control" multiple type="file" id="formFile1" (change)="onFileChange($event)">
@@ -414,82 +474,119 @@
                     <br>
                     <br>
                     <br>
-
-
-                    <div class="card">
+                   <div class="card">
                       <div class="control-section">
-                        <ejs-grid #grid [dataSource]="data" [allowPaging]="true" [allowGrouping]="true"
-                                  [groupSettings]="groupSettings" [pageSettings]='pageOption'
-                                  (dataBound)='dataBound()' (load)='load()' height='700px'
-                                  class="grid-container e-bordered">
-                          <e-columns style=" font-size: 10px;">
-                            <!-- New Columns from the Bts interface -->
-                            <e-column field='msg_seq' headerText='Message Seq' width='150'></e-column>
-                            <e-column field='sim_env' headerText='SIM Environment' width='150'></e-column>
-                            <e-column field='wording' headerText='Wording' width='150'></e-column>
-                            <e-column field='message_type' headerText='Message Type' width='150'></e-column>
-                            <e-column field='onl_de_004' headerText='Onl De 004' width='150'></e-column>
-                            <e-column field='onl_de_003' headerText='Onl De 003' width='150'></e-column>
-                            <e-column field='onl_de_011' headerText='Onl De 011' width='150'></e-column>
-                            <e-column field='onl_de_035' headerText='Onl De 035' width='150'></e-column>
-                            <e-column field='onl_de_037' headerText='Onl De 037' width='150'></e-column>
-                            <e-column field='onl_de_038' headerText='Onl De 038' width='150'></e-column>
-                            <e-column field='onl_de_041' headerText='Onl De 041' width='150'></e-column>
-                            <e-column field='onl_de_042' headerText='Onl De 042' width='150'></e-column>
-                            <e-column field='onl_de_060' headerText='Onl De 060' width='150'></e-column>
-                            <e-column field='onl_de_125' headerText='Onl De 125' width='150'></e-column>
-                            <e-column field='onl_de_124' headerText='Onl De 124' width='150'></e-column>
-                            <e-column field='onl_de_124_part1' headerText='Onl De 124 part1' width='150'></e-column>
+                        <table class="table table-responsive table-striped nowrap" style="width: 100%; font-size: 10px; overflow-x: auto;" id="myTable">
+                          <thead class="table-dark">
 
-                            <e-column field='onl_de_012' headerText='Onl De 012' width='150'></e-column>
-                            <e-column field='onl_de_013' headerText='Onl De 013' width='150'></e-column>
-                            <e-column field='onl_de_007' headerText='Onl De 007' width='150'></e-column>
-                            <e-column field='logical_network' headerText='Logical Network' width='150'></e-column>
-                            <e-column field='financial_constitution_id' headerText='Financial Constitution ID'
-                                      width='150'></e-column>
-                            <e-column field='deleting' headerText='Deleting' width='150'></e-column>
-                            <e-column field='activity_flag' headerText='Activity Flag' width='150'></e-column>
-                            <e-column field='send_count' headerText='Send Count' width='150'></e-column>
-                            <e-column field='delay_time' headerText='Delay Time' width='150'></e-column>
-                            <e-column field='chunk_delay' headerText='Chunk Delay' width='150'></e-column>
-                            <e-column field='response_flag' headerText='Response Flag' width='150'></e-column>
-                            <e-column field='reversal_flag' headerText='Reversal Flag' width='150'></e-column>
-                            <e-column field='onl_de_018' headerText='Onl De 018' width='150'></e-column>
-                            <e-column field='onl_de_024' headerText='Onl De 024' width='150'></e-column>
-                            <e-column field='onl_de_027' headerText='Onl De 027' width='150'></e-column>
-                            <e-column field='onl_de_032' headerText='Onl De 032' width='150'></e-column>
-                            <e-column field='onl_de_039' headerText='Onl De 039' width='150'></e-column>
-                            <e-column field='onl_de_043' headerText='Onl De 043' width='150'></e-column>
-                            <e-column field='onl_de_048' headerText='Onl De 048' width='150'></e-column>
-                            <e-column field='onl_de_049' headerText='Onl De 049' width='150'></e-column>
-                            <e-column field='onl_de_057' headerText='Onl De 057' width='150'></e-column>
-                            <e-column field='onl_de_061' headerText='Onl De 061' width='150'></e-column>
-                            <e-column field='onl_de_100' headerText='Onl De 100' width='150'></e-column>
-                            <e-column field='user_create' headerText='User Create' width='150'></e-column>
-                            <e-column field='user_modif' headerText='User Modify' width='150'></e-column>
-                            <e-column headerText="Actions" width="300">
-                              <!-- Define custom template for action buttons -->
-                              <ng-template #template let-data>
-                                <button (click)="onDeleteBts(data.msg_seq)" class="btn btn-icon btn-2 btn-danger btn-sm">
-                                  <span class="btn-inner--icon">X</span>
+                            <tr>
+                              <th>Message Seq</th>
+                              <th>SIM Environment</th>
+                              <th>Wording</th>
+                              <th>Message Type</th>
+                              <th>Onl De 004</th>
+                              <th>Onl De 003</th>
+                              <th>Onl De 011</th>
+                              <th>Onl De 035</th>
+                              <th>Onl De 037</th>
+                              <th>Onl De 038</th>
+                              <th>Onl De 041</th>
+                              <th>Onl De 042</th>
+                              <th>Onl De 060</th>
+                              <th>Onl De 125</th>
+                              <th>Onl De 124</th>
+                              <th>Onl De 124 part1</th>
+                              <th>Onl De 012</th>
+                              <th>Onl De 013</th>
+                              <th>Onl De 007</th>
+                              <th>Logical Network</th>
+                              <th>Financial Constitution ID</th>
+                              <th>Deleting</th>
+                              <th>Activity Flag</th>
+                              <th>Send Count</th>
+                              <th>Delay Time</th>
+                              <th>Chunk Delay</th>
+                              <th>Response Flag</th>
+                              <th>Reversal Flag</th>
+                              <th>Onl De 018</th>
+                              <th>Onl De 024</th>
+                              <th>Onl De 027</th>
+                              <th>Onl De 032</th>
+                              <th>Onl De 039</th>
+                              <th>Onl De 043</th>
+                              <th>Onl De 048</th>
+                              <th>Onl De 049</th>
+                              <th>Onl De 057</th>
+                              <th>Onl De 061</th>
+                              <th>Onl De 100</th>
+                              <th>User Create</th>
+                              <th>User Modify</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of data">
+                              <td>{{ item.msg_seq }}</td>
+                              <td>{{ item.sim_env }}</td>
+                              <td>{{ item.wording }}</td>
+                              <td>{{ item.message_type }}</td>
+                              <td>{{ item.onl_de_004 }}</td>
+                              <td>{{ item.onl_de_003 }}</td>
+                              <td>{{ item.onl_de_011 }}</td>
+                              <td>{{ item.onl_de_035 }}</td>
+                              <td>{{ item.onl_de_037 }}</td>
+                              <td>{{ item.onl_de_038 }}</td>
+                              <td>{{ item.onl_de_041 }}</td>
+                              <td>{{ item.onl_de_042 }}</td>
+                              <td>{{ item.onl_de_060 }}</td>
+                              <td>{{ item.onl_de_125 }}</td>
+                              <td>{{ item.onl_de_124 }}</td>
+                              <td>{{ item.onl_de_124_part1 }}</td>
+                              <td>{{ item.onl_de_012 }}</td>
+                              <td>{{ item.onl_de_013 }}</td>
+                              <td>{{ item.onl_de_007 }}</td>
+                              <td>{{ item.logical_network }}</td>
+                              <td>{{ item.financial_constitution_id }}</td>
+                              <td>{{ item.deleting }}</td>
+                              <td>{{ item.activity_flag }}</td>
+                              <td>{{ item.send_count }}</td>
+                              <td>{{ item.delay_time }}</td>
+                              <td>{{ item.chunk_delay }}</td>
+                              <td>{{ item.response_flag }}</td>
+                              <td>{{ item.reversal_flag }}</td>
+                              <td>{{ item.onl_de_018 }}</td>
+                              <td>{{ item.onl_de_024 }}</td>
+                              <td>{{ item.onl_de_027 }}</td>
+                              <td>{{ item.onl_de_032 }}</td>
+                              <td>{{ item.onl_de_039 }}</td>
+                              <td>{{ item.onl_de_043 }}</td>
+                              <td>{{ item.onl_de_048 }}</td>
+                              <td>{{ item.onl_de_049 }}</td>
+                              <td>{{ item.onl_de_057 }}</td>
+                              <td>{{ item.onl_de_061 }}</td>
+                              <td>{{ item.onl_de_100 }}</td>
+                              <td>{{ item.user_create }}</td>
+                              <td>{{ item.user_modif }}</td>
+                              <td>
+                                <button (click)="onDeleteBts(item.msg_seq)" class="btn btn-danger btn-sm">
+                                  <span>X</span>
                                 </button>
-                                <button (click)="onAddButtonClick(data); onShow()"
-                                        class="btn btn-icon btn-2 btn-primary btn-sm">
-                                  <span class="btn-inner--icon">Modifier</span>
+                                <button (click)="onAddButtonClick(item); onShow()" class="btn btn-primary btn-sm">
+                                  <span>Modifier</span>
                                 </button>
-
-                                <button (click)="onAddButtonClickSQL(data.msg_seq)"
-                                        class="btn btn-icon btn-2 btn-info btn-sm">
-                                  <span class="btn-inner--icon">SQL file</span>
+                                <button (click)="onAddButtonClickSQL(item.msg_seq)" class="btn btn-info btn-sm">
+                                  <span>SQL file</span>
                                 </button>
-                              </ng-template>
-                            </e-column>
-
-                          </e-columns>
-
-                        </ejs-grid>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
+                    
+                    
+                      
+                     
                     <div class="form-group button-group">
                       <button class="btn btn-info btn-sm" (click)="onClick()">SQL Result</button>
                     </div>

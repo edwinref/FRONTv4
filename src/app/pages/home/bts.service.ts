@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { Bts } from './bts';
-import { environment } from '../environments/environment';
 import { DatePipe } from '@angular/common';
+import {
+  HttpClient,
+  HttpHeaders,
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
+import { Observable } from 'rxjs';
+
+import { environment } from '../environments/environment';
+import { Bts } from './bts';
 
 @Injectable({ providedIn: 'root' })
 export class BtsService {
@@ -26,7 +30,7 @@ public getBts(): Observable<Bts[]> {
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Access-Control-Allow-Origin': 'http://localhost:4200',
+    // 'Access-Control-Allow-Origin': 'http://localhost:4200',
   });
 
   return this.http.get<Bts[]>(url, { headers });

@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 declare interface RouteInfo {
@@ -10,11 +13,11 @@ declare interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
 
     { path: '/home', title: 'Home',  icon:'ni-building text-green', class: '' },
-    { path: '/users', title: 'Users',  icon:'ni-single-02 text-yellow', class: '' },
-     { path: '/processing-code', title: 'ProcessingCode',  icon:'ni-bullet-list-67 text-red', class: '' },
-     { path: '/message-type', title: 'MessageType',  icon:'ni-email-83 text-blue', class: '' },
-      { path: '/login', title: 'Logout',  icon:'ni-key-25 text-info', class: '' }
-
+    // { path: '/users', title: 'Users',  icon:'ni-single-02 text-yellow', class: '' },
+    //  { path: '/processing-code', title: 'ProcessingCode',  icon:'ni-bullet-list-67 text-red', class: '' },
+    //  { path: '/message-type', title: 'MessageType',  icon:'ni-email-83 text-blue', class: '' },
+    //   { path: '/login', title: 'Logout',  icon:'ni-key-25 text-info', class: '' }
+ 
 
 ];
 

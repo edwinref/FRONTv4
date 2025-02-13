@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import {Bts} from "../home/bts";
-import {MessageType} from "../home/processing-code";
+import { Injectable } from '@angular/core';
 
+import { Observable } from 'rxjs';
+
+import { MessageType } from '../home/processing-code';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ export class MessagetypeService {
     return this.httpClient.post<MessageType>(`${this.baseURL}`, MessageType);
   }
   public getMessageTypes(): Observable<{ code: string, description: string }[]> {
-    return this.httpClient.get<{ code: string, description: string }[]>('http://localhost:9091/bts/getAllMessageType');
+    return this.httpClient.get<{ code: string, description: string }[]>('http://localhost:9091/bts/messagetype');
   }
 
   public deleteUser(id: string): Observable<void> {

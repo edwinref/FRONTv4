@@ -1,17 +1,32 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AggregateService, GroupService, GridComponent } from '@syncfusion/ej2-angular-grids';
-import {Bts} from './bts';
-import {MessageType, ProcessingCode} from './processing-code';
-import {BtsService} from './bts.service';
-import {DatePipe} from '@angular/common';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import { saveAs } from 'file-saver';
-import {LicenseManager} from 'ag-grid-enterprise';
-import {environment} from "../environments/environment";
-import {any} from "codelyzer/util/function";
+import {
+  HttpClient,
+  HttpErrorResponse,
+} from '@angular/common/http';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 
-LicenseManager.setLicenseKey('Ngo9BigBOggjHTQxAR8/V1NGaF5cXmdCdkx3THxbf1xzZFNMZVxbR3JPMyBoS35RdUVkW39ednFVRWVcU0F0');
-LicenseManager.getLicenseDetails('Ngo9BigBOggjHTQxAR8/V1NGaF5cXmdCdkx3THxbf1xzZFNMZVxbR3JPMyBoS35RdUVkW39ednFVRWVcU0F0');
+import { LicenseManager } from 'ag-grid-enterprise';
+import { saveAs } from 'file-saver';
+
+import {
+  AggregateService,
+  GridComponent,
+  GroupService,
+} from '@syncfusion/ej2-angular-grids';
+
+import { environment } from '../environments/environment';
+import { Bts } from './bts';
+import { BtsService } from './bts.service';
+import {
+  MessageType,
+  ProcessingCode,
+} from './processing-code';
+
+LicenseManager.setLicenseKey('ORg4AjUWIQA/Gnt2XVhhQlJHfV5dXGRWfFN0QHNRdVx5flZBcC0sT3RfQFliS39bdkxiW3xedX1WRA==');
+LicenseManager.getLicenseDetails('ORg4AjUWIQA/Gnt2XVhhQlJHfV5dXGRWfFN0QHNRdVx5flZBcC0sT3RfQFliS39bdkxiW3xedX1WRA==');
 
 interface BtsSubset {
   msg_seq: string;
@@ -263,7 +278,6 @@ export class HomeComponent implements OnInit {
   }
 
 
-
   public confirmTruncateTable(): void {
     const confirmed = confirm('Are you sure you want to truncate the table?');
 
@@ -439,7 +453,7 @@ export class HomeComponent implements OnInit {
     //console.log('onl_de_124:', this.onl_de_124);
     const data: Bts = {
       msg_seq: nextMsgSeq,
-      sim_env: 'Base24',
+      sim_env: 'BASE24',
       onl_de_004: this.onl_de_004 ? this.onl_de_004.toString().padStart(12, '0') : null,
       onl_de_003: selectedCode,
       onl_de_011: this.onl_de_011 ? this.onl_de_011.toString().padStart(6, '0') : null,
@@ -463,8 +477,8 @@ export class HomeComponent implements OnInit {
       send_count: this.send_count !== 0 ? this.send_count : null,
       delay_time: this.delay_time !== 0 ? this.delay_time : null,
       chunk_delay: this.chunk_delay !== 0 ? this.chunk_delay : null,
-      response_flag: this.response_flag.trim() !== '' ? this.response_flag : null,
-      reversal_flag: this.reversal_flag.trim() !== '' ? this.reversal_flag : null,
+      response_flag: this.response_flag.trim() !== '' ? this.response_flag : 'N',
+      reversal_flag: this.reversal_flag.trim() !== '' ? this.reversal_flag : 'N',
       onl_de_018: this.onl_de_018.trim() !== '' ? this.onl_de_018 : null,
       onl_de_024: this.onl_de_024.trim() !== '' ? this.onl_de_024 : null,
       onl_de_027: this.onl_de_027.trim() !== '' ? this.onl_de_027 : null,
@@ -502,7 +516,7 @@ export class HomeComponent implements OnInit {
     try {
       // Make an HTTP POST request to the backend /bts/add endpoint
       await this.http.post('/bts/add', { onl_de_035: value }).toPromise();
-
+      console.log('elhadiiii    : ',value);
       // Optionally, you can return a response or perform additional actions
       // For example, returning the inserted record or updating the UI
     } catch (error) {
@@ -539,23 +553,31 @@ export class HomeComponent implements OnInit {
       return '1';
     }
   }
+  sanitizeValue(value: any): string {
+    if (value === '' || value == null || (typeof value === 'string' && value.toLowerCase() === 'null')) {
+      return 'NULL';
+    }
+    return `'${value}'`;
+  }
+  
+  
   onAddButtonClickSQL(msg_seq: string): void {
     this.btsService.getBtsByMsgSeq(msg_seq).subscribe(
       (response: Bts) => { // Change the parameter type to 'Bts'
         let blob;
         if (response) { // Check if a response is received
           const data: Bts = response;
-          const insertSQL = `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035,onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060,onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording,logical_network, financial_constitution_id, activity_flag, send_count,delay_time, chunk_delay, response_flag, reversal_flag, onl_de_018,onl_de_024, onl_de_027, onl_de_032, onl_de_039, onl_de_043,onl_de_048, onl_de_049, onl_de_057, onl_de_061, onl_de_100, user_create, user_modif)
-                                           VALUES ('${data.msg_seq}', '${data.sim_env}', '${data.onl_de_004}', '${data.onl_de_003}',
-                                                   '${data.onl_de_011}', '${data.onl_de_035}', '${data.onl_de_037}', '${data.onl_de_038}',
-                                                   '${data.onl_de_041}', '${data.onl_de_042}', '${data.onl_de_060}', '${data.onl_de_125}',
-                                                   '${data.onl_de_012}', '${data.onl_de_013}', '${data.onl_de_007}', '${data.message_type}',
-                                                   '${data.wording}', '${data.logical_network}', '${data.financial_constitution_id}',
-                                                   '${data.activity_flag}', ${data.send_count}, ${data.delay_time}, ${data.chunk_delay},
-                                                   '${data.response_flag}', '${data.reversal_flag}', '${data.onl_de_018}', '${data.onl_de_024}',
-                                                   '${data.onl_de_027}', '${data.onl_de_032}', '${data.onl_de_039}', '${data.onl_de_043}',
-                                                   '${data.onl_de_048}', '${data.onl_de_049}', '${data.onl_de_057}', '${data.onl_de_061}',
-                                                   '${data.onl_de_100}', '${data.user_create}', '${data.user_modif}');`;
+          const insertSQL = `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035, onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060, onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording, activity_flag, send_count, delay_time, chunk_delay, response_flag, reversal_flag, onl_de_018, onl_de_024, onl_de_027, onl_de_032, onl_de_039, onl_de_043, onl_de_048, onl_de_049, onl_de_057, onl_de_061, onl_de_100, user_create, user_modif)
+                                       VALUES (${this.sanitizeValue(data.msg_seq)}, ${this.sanitizeValue(data.sim_env)}, ${this.sanitizeValue(data.onl_de_004)}, ${this.sanitizeValue(data.onl_de_003)},
+                                               ${this.sanitizeValue(data.onl_de_011)}, ${this.sanitizeValue(data.onl_de_035)}, ${this.sanitizeValue(data.onl_de_037)}, ${this.sanitizeValue(data.onl_de_038)},
+                                               ${this.sanitizeValue(data.onl_de_041)}, ${this.sanitizeValue(data.onl_de_042)}, ${this.sanitizeValue(data.onl_de_060)}, ${this.sanitizeValue(data.onl_de_125)},
+                                               ${this.sanitizeValue(data.onl_de_012)}, ${this.sanitizeValue(data.onl_de_013)}, ${this.sanitizeValue(data.onl_de_007)}, ${this.sanitizeValue(data.message_type)},
+                                               ${this.sanitizeValue(data.wording)}, ${this.sanitizeValue(data.activity_flag)}, ${data.send_count}, ${data.delay_time}, ${data.chunk_delay},
+                                               'N','N', ${this.sanitizeValue(data.onl_de_018)}, ${this.sanitizeValue(data.onl_de_024)},
+                                               ${this.sanitizeValue(data.onl_de_027)}, ${this.sanitizeValue(data.onl_de_032)}, ${this.sanitizeValue(data.onl_de_039)}, ${this.sanitizeValue(data.onl_de_043)},
+                                               ${this.sanitizeValue(data.onl_de_048)}, ${this.sanitizeValue(data.onl_de_049)}, ${this.sanitizeValue(data.onl_de_057)}, ${this.sanitizeValue(data.onl_de_061)},
+                                               ${this.sanitizeValue(data.onl_de_100)}, ${this.sanitizeValue(data.user_create)}, ${this.sanitizeValue(data.user_modif)});`;
+
           //console.log('SQL Insert Statement:');
           //console.log(insertSQL);
           blob = new Blob([insertSQL], {
@@ -652,6 +674,8 @@ export class HomeComponent implements OnInit {
     return !isNaN(onlDe004Number);
   }
 
+  
+
   onClick() {
     this.btsService.getBts().subscribe(
       (response: Bts[]) => {
@@ -667,24 +691,19 @@ export class HomeComponent implements OnInit {
         let blob;
         if (response.length > 0) {
           const values = response
-            .map((data: Bts) => {
-              return `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035,
-                                                                                            onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060,
-                                                                                            onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording,
-                                                                                            logical_network, financial_constitution_id, activity_flag, send_count,
-                                                                                            delay_time, chunk_delay, response_flag, reversal_flag, onl_de_018,
-                                                                                            onl_de_024, onl_de_027, onl_de_032, onl_de_039, onl_de_043,
-                                                                                            onl_de_048, onl_de_049, onl_de_057, onl_de_061, onl_de_100,
-                                                                                            user_create, user_modif) VALUES `+`('${data.msg_seq}', '${data.sim_env}', '${data.onl_de_004}', '${data.onl_de_003}',
-                                    '${data.onl_de_011}', '${data.onl_de_035}', '${data.onl_de_037}', '${data.onl_de_038}',
-                                    '${data.onl_de_041}', '${data.onl_de_042}', '${data.onl_de_060}', '${data.onl_de_125}',
-                                    '${data.onl_de_012}', '${data.onl_de_013}', '${data.onl_de_007}', '${data.message_type}',
-                                    '${data.wording}', '${data.logical_network}', '${data.financial_constitution_id}',
-                                    '${data.activity_flag}', ${data.send_count}, ${data.delay_time}, ${data.chunk_delay},
-                                    '${data.response_flag}', '${data.reversal_flag}', '${data.onl_de_018}', '${data.onl_de_024}',
-                                    '${data.onl_de_027}', '${data.onl_de_032}', '${data.onl_de_039}', '${data.onl_de_043}',
-                                    '${data.onl_de_048}', '${data.onl_de_049}', '${data.onl_de_057}', '${data.onl_de_061}',
-                                    '${data.onl_de_100}', '${data.user_create}', '${data.user_modif}')`;
+            .map((data: Bts) => {   
+              return `INSERT INTO pwr_cert_messages (msg_seq, sim_env, onl_de_004, onl_de_003, onl_de_011, onl_de_035,onl_de_037, onl_de_038, onl_de_041, onl_de_042, onl_de_060,onl_de_125, onl_de_012, onl_de_013, onl_de_007, message_type, wording,logical_network, financial_constitution_id, activity_flag, send_count,delay_time, chunk_delay, response_flag, reversal_flag, onl_de_018,onl_de_024, onl_de_027, onl_de_032, onl_de_039, onl_de_043, onl_de_048, onl_de_049, onl_de_057, onl_de_061, onl_de_100,user_create, user_modif) VALUES `+`(${this.sanitizeValue(data.msg_seq)}, ${this.sanitizeValue(data.sim_env)}, ${this.sanitizeValue(data.onl_de_004)}, 
+              ${this.sanitizeValue(data.onl_de_003)}, ${this.sanitizeValue(data.onl_de_011)}, ${this.sanitizeValue(data.onl_de_035)}, 
+              ${this.sanitizeValue(data.onl_de_037)}, ${this.sanitizeValue(data.onl_de_038)}, ${this.sanitizeValue(data.onl_de_041)}, 
+              ${this.sanitizeValue(data.onl_de_042)}, ${this.sanitizeValue(data.onl_de_060)}, ${this.sanitizeValue(data.onl_de_125)}, 
+              ${this.sanitizeValue(data.onl_de_012)}, ${this.sanitizeValue(data.onl_de_013)}, ${this.sanitizeValue(data.onl_de_007)}, 
+              ${this.sanitizeValue(data.message_type)}, ${this.sanitizeValue(data.wording)}, ${this.sanitizeValue(data.logical_network)}, 
+              ${this.sanitizeValue(data.financial_constitution_id)}, ${this.sanitizeValue(data.activity_flag)}, ${data.send_count ?? 'NULL'}, 
+              ${data.delay_time ?? 'NULL'}, ${data.chunk_delay ?? 'NULL'},  'N','N', ${this.sanitizeValue(data.onl_de_018)}, ${this.sanitizeValue(data.onl_de_024)}, 
+              ${this.sanitizeValue(data.onl_de_027)}, ${this.sanitizeValue(data.onl_de_032)}, ${this.sanitizeValue(data.onl_de_039)}, 
+              ${this.sanitizeValue(data.onl_de_043)}, ${this.sanitizeValue(data.onl_de_048)}, ${this.sanitizeValue(data.onl_de_049)}, 
+              ${this.sanitizeValue(data.onl_de_057)}, ${this.sanitizeValue(data.onl_de_061)}, ${this.sanitizeValue(data.onl_de_100)}, 
+              ${this.sanitizeValue(data.user_create)}, ${this.sanitizeValue(data.user_modif)})`;
             })
             .join('; ');
 
@@ -891,6 +910,7 @@ export class HomeComponent implements OnInit {
     const fld057StartPattern = /- FLD \(057\)\s+\(\d+\)\s+\[/;
     const fld057EndPattern = /\]/;
     const flstest=/\b\d{4} \d{9} \d{8} \d{8}\|4\|\s+(.*)$/;
+
     const regextest = /\[(.*?)\]/;
     const fld003Pattern = /FLD \(003\).*?\[(\d+)\]/;
 
@@ -902,7 +922,7 @@ export class HomeComponent implements OnInit {
     let insideFLD057 = false;
     let accumulatedFLD057 = '';
     var mtiFLD057Values = new Array();
-    var onl003=new Array();
+    let onl003=new Array();
     let indexJson=0;
     let index057=0;
 
@@ -913,7 +933,7 @@ export class HomeComponent implements OnInit {
       const fld057EndMatch = line.match(fld057EndPattern);
       const fldtestMatch =line.match(flstest);
       const fldtestMatch003 =line.match(fld003Pattern);
-
+      // console.log(mtiMatch);
       if (mtiMatch) {
         currentMTI = mtiMatch[1];
         currentFLD = null; // Reset currentFLD for new MTI block
@@ -922,11 +942,14 @@ export class HomeComponent implements OnInit {
         insideFLD057 = false;
         uniqueResult1 = '';
       } else
-      if ((currentMTI === '0120' || currentMTI === '0220' || currentMTI === '0420' || currentMTI === '0520')) {
+      if ((currentMTI === '0120' || currentMTI === '0220' || currentMTI === '0420' || currentMTI === '0520'|| currentMTI === '0130')) {
         if (fldtestMatch003){
           const fld003Value = fldtestMatch003[1]; // Extracted value from the pattern
 
           onl003.push(fld003Value);
+          console.log('field 003',fld003Value);
+          
+
         }
         if (fldtestMatch) {
           const field = fldtestMatch[1].trim();
@@ -937,32 +960,46 @@ export class HomeComponent implements OnInit {
             insideFLD057 = true; // Mark that we are inside fld057
             // Initialize currentFLD057 with the current line content
             currentFLD057 = line;
+            // console.log('resullllt line "'+line+'"');
             // Check if the current line does not contain ']' and there are more lines
             while (!line.includes(']') && index + 1 < array.length) {
               // Move to the next line and concatenate it to currentFLD057
               index++;
 
               line = array[index];
+
               currentFLD057 += line;
             }
             // At this point, currentFLD057 contains the concatenated lines
             //console.log('Concatenated fld057:', currentFLD057);
             const filteredContentMatches = currentFLD057.match(regextest);
+            console.log('result match "'+filteredContentMatches+'"');
+
             if (filteredContentMatches) {
               const filteredContent = filteredContentMatches[1];
               //console.log('Filtered FLD 057 Content:', filteredContent);
-
-              const pattern = /(\s*)\.\d{4} \d{9} \d{8} \d{8}\|4\|(\s)/g;
-              uniqueResult1 = filteredContent.replace(pattern, '');
+            
+              const pattern22 = /(\s*)\.\d{4} \d{9} \d{8} \d{8}\|4\|(\s)/g;
+              const pattern = / \.\d{4} \d{9} \d{8} \d{8}\|4\|\s/g;
+              const pattern111 = /\.\d{4} \d{9} \d{8} \d{8}\|4\|\s+/g;
+              const pattern33 = /\.\s.{36}/g; // Skip 36 characters after the dot
+            
+              // Remove the 36 characters after the dot
+              const pattern12 = /\.\d{4} \d{9} \d{8} \d{8}\|4\|(\s+)/g;
+              let uniqueResult1 = filteredContent.replace(pattern, ''); // This will replace the matched part but keep the whitespace
+              console.log('resullllt "'+uniqueResult1+'"');
               mtiFLD057Values[currentMTI] = uniqueResult1; // Store FLD 057 value for current MTI
-
+            
               currentFLD[`onl_de_057`] = uniqueResult1;
               //console.log('uniqueResult1 for MTI', currentMTI + ': ' + uniqueResult1);
+              
               if (!mtiFLD057Values[currentMTI]) {
                 mtiFLD057Values[currentMTI] = []; // Initialize array if it doesn't exist
               }
+            
               mtiFLD057Values.push(uniqueResult1);
             }
+            
           }
         }
 
@@ -998,14 +1035,16 @@ export class HomeComponent implements OnInit {
 
       }
 
-
     });
 
     extractedData.forEach((data,index) => {
       data['onl_de_057'] = mtiFLD057Values[index] || '';
       //console.log("mtiFLD057Values with index  "+mtiFLD057Values[index])
-     // data['onl_de_003'] = onl003[index] || '';
-      data['onl_de_003'] = data.onl_de_003.toString();
+      data['onl_de_003'] = onl003[index] || '';
+      console.log('test onl_de_003 '+onl003[index]);
+      // data['onl_de_003'] = data.onl_de_003.toString();
+      // data['onl_de_003'] = onl003;
+
       // Add default values for missing keys
       const defaultValues: {
 
@@ -1013,7 +1052,7 @@ export class HomeComponent implements OnInit {
         sim_env: string;
         response_flag: string;
         message_type: string;
-        onl_de_017: null;
+        onl_de_017: string;
         onl_de_039: string;
         onl_de_018: string;
         onl_de_048: string;
@@ -1038,16 +1077,16 @@ export class HomeComponent implements OnInit {
         delay_time: number
       } = {
         wording:'message'+Math.floor(Math.random() * 1000),
-        sim_env:'Base24',
+        sim_env:'BASE24',
         activity_flag: 'N',
         send_count: 1,
         delay_time: 0,
         chunk_delay: 0,
-        response_flag: '0',
-        reversal_flag: '0',
-        autho_code: '',
+        response_flag: 'N',
+        reversal_flag: 'N',
+        autho_code: 'XXXXXX',
         message_type:'0120',
-        onl_de_017: null,
+        onl_de_017: '',
         onl_de_018: '5411',
         onl_de_021: '',
         onl_de_024: '000',
@@ -1060,7 +1099,10 @@ export class HomeComponent implements OnInit {
         onl_de_057: '7FF90000800080248800752C964AC108ABD10000210000000000000000003C00017E89496723031000B95C173B000706010A03A0600200200020002000200020002000200020002000200020002000',
         onl_de_061: 'FNB INT100000000000',
         onl_de_090: '',
-        onl_de_100: '55555555556',
+        onl_de_100: '',
+        //ERE20250103 START 
+        // onl_de_100: '55555555556',
+        //ERE20250103 END 
         user_create: 'FNBROA_DV',
         user_modif: 'FNBROA_DV',
         onl_de_125: '',
@@ -1076,7 +1118,6 @@ export class HomeComponent implements OnInit {
     const dataArray = JSON.parse(jsonData); // Parse jsonData into an array
 
 
-
     function escapeValue(value: string): string {
       return value.replace(/'/g, "''");
     }
@@ -1085,7 +1126,6 @@ export class HomeComponent implements OnInit {
     dataArray.forEach((data) => {
       const columns = Object.keys(data).join(', ');
       const values = Object.values(data).map((value) => `'${escapeValue(value.toString())}'`).join(', ');
-
       const insertQuery = `INSERT INTO pwr_cert_messages (${columns}) VALUES (${values});`;
 
       //console.log(insertQuery);
@@ -1103,7 +1143,7 @@ export class HomeComponent implements OnInit {
     dataArray.forEach((data) => {
       //console.log(data); // Print each object
       //console.log(data.onl_de_003)
-
+      
       // Calling addBts method to add data to the database
        btsService.addBts(data).subscribe(
         response => {
